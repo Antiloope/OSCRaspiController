@@ -8,6 +8,11 @@ class OSCServer():
         self.queue = queue
         #self.client = SimpleUDPClient(ip, port)
 
+    def start(self):
+        print("OSCServer started")
+
+    def stop(self):
+        print("OSCServer stopped")
 #
 # def filter_handler(address, *args):
 #     print(f"{address}: {args}")
