@@ -1,5 +1,7 @@
 from manager.state.state import State
 from manager.queue.message import Message
+import asyncio
+import heg.definitions as hdef
 
 class EventsManager():
     def __init__(self, heg, osc_server, queue, osc_client, display_manager):
@@ -9,14 +11,21 @@ class EventsManager():
         self.queue = queue
         self.display_manager = display_manager
         self.state = State()
+        self.handler = {
+                hdef.PLAY_BUTTON: (self.play_button_handler, '/play'),
+                hdef.EXIT_BUTTON: (self.exit_button_handler, None)
+            }
+
 
     def handle_events(self):
-        running = True
-        while running:
+        self.running = True
+        while self.running:
             message = self.queue.pop_block()
-            print("Message: ", message.message)
-            if message.message == 'exit':
-                running = False
+            
+            print(message.emmiter, " - Message: ", message.content)
+            
+            self.handler[message.emmiter][0](message)
+
 
     def start(self):
         self.display_manager.init()
@@ -28,3 +37,11 @@ class EventsManager():
 
         self.heg.stop()
         self.osc_server.stop()
+
+
+    def play_button_handler(self, message):
+        self.osc_client.send_message(self.handler[message.emmiter][1], message.content)
+
+
+    def exit_button_handler(self, message):
+        self.running = False

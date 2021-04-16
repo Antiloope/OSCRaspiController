@@ -1,6 +1,6 @@
-import queue as q
+from multiprocessing import Queue
 
-QUEUE_CLASS_TYPE = q.Queue
+QUEUE_CLASS_TYPE = Queue
 
 '''
 EventsQueue
