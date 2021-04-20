@@ -1,7 +1,8 @@
 from manager.state.state import State
 from manager.queue.message import Message
-import asyncio
-import heg.definitions as hdef
+import heg.names as heg_names
+import manager.addresses as addresses
+import osc.names as osc_names
 
 class EventsManager():
     def __init__(self, heg, osc_server, queue, osc_client, display_manager):
@@ -12,8 +13,10 @@ class EventsManager():
         self.display_manager = display_manager
         self.state = State()
         self.handler = {
-                hdef.PLAY_BUTTON: (self.play_button_handler, '/play'),
-                hdef.EXIT_BUTTON: (self.exit_button_handler, None)
+                heg_names.PLAY_BUTTON:  (self.play_button_handler,  addresses.PLAY),
+                heg_names.EXIT_BUTTON:  (self.exit_button_handler,  addresses.EXIT),
+                heg_names.MAIN_KNOB:    (self.main_knob_handler,    addresses.MAIN_KNOB),
+                osc_names.TIME_CODE:    (self.time_code_handler,    addresses.TIME_CODE)
             }
 
 
@@ -21,9 +24,9 @@ class EventsManager():
         self.running = True
         while self.running:
             message = self.queue.pop_block()
-            
+
             print(message.emmiter, " - Message: ", message.content)
-            
+
             self.handler[message.emmiter][0](message)
 
 
@@ -44,4 +47,15 @@ class EventsManager():
 
 
     def exit_button_handler(self, message):
+        self.display_manager.bye()
         self.running = False
+
+
+    def main_knob_handler(self, message):
+        self.osc_client.send_message(self.handler[message.emmiter][1], message.content)
+
+
+    def time_code_handler(self, message):
+        print(message.content)
+
+        self.display_manager.print_timecode(message.content)

@@ -1,0 +1,9 @@
+PLAY_BUTTON = 'play_button'
+PLAY_BUTTON_PIN = 4
+
+EXIT_BUTTON = 'exit_button'
+EXIT_BUTTON_PIN = 17
+
+MAIN_KNOB = 'main_knob'
+MAIN_KNOB_PINA = 20
+MAIN_KNOB_PINB = 21
